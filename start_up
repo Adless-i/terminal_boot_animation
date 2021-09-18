@@ -1,0 +1,80 @@
+#!/data/data/com.termux/files/usr/bin/python
+#
+from os import system as _sys_
+from os import get_terminal_size as term_size
+import random
+from time import sleep
+from subprocess import getoutput
+import requests
+_sys_("tput smcup && clear")
+def apt_version():
+    if (getoutput("apt --version"))=="apt 2.3.9 (aarch64)":return "\033[32mup to date"
+    else:return "\033[31mnot up dated"
+
+print(f"\033[1mstarting termux\nchicking system [   \033[32mok\033[37m   ]\nsystem status   [ {apt_version()}\033[37m ]")
+print("apt status ...\n\n")
+sleep(1)
+def packed_data():
+    def printer_status(callback):
+        x,y=term_size()
+        temp=(x-26)-(len(callback))
+        print(f"checking  {callback} ... "," "*temp,sep='',end='')
+        sleep(0.02)
+        print("[   \033[32mok\033[37m   ]")
+
+    def list_of_apps():
+        raw_data=getoutput("apt list --installed")
+        meta_data=[]
+        harvested=raw_data.split("\n")
+        for i in harvested:
+            tmp=i.split("/")
+            for i in tmp:
+                if len(i)<=25:meta_data.append(i)
+        meta_data.remove(meta_data[0])
+        meta_data.remove(meta_data[1])
+        meta_data.remove("")
+        return meta_data
+    for i in list_of_apps():
+        printer_status(i)
+ran_list="1234567890qwertyuiopasdfghjklzxcvbnm@#₹_&-+()/*:;!?~`|•√π÷×¶∆€¥$¢^°={}\%©®™✓[]<>"
+load=r"/—\|/—\|/—\|/—\|/—\|/—\|/—\|/—\|/—\|/—\|/—\|/—\|"
+list=[]
+for i in ran_list:
+    list.append(i)
+def print_message(message):
+    print("\033[?25l",end='')
+    for i in range(0,int(len(message))):
+        print(list[random.randint(0,79)],end='',sep='',flush=True)
+        sleep(0.02)
+    print("\r",sep='',end='',flush=True)
+    for i in message:
+        print(i,sep='',end='',flush=True)
+        sleep(0.02)
+    print(' ',end='',flush=True)
+    for i in load:
+        print("\b",i,sep='',end='',flush=True)
+        sleep(0.06)
+    print("\b\033[32m_\033[37m",end='',flush=True)
+    sleep(0.7)
+
+def internet_status():
+    x,y=term_size()
+    tmp=x-38
+    print("checking network status ..."," "*tmp,sep='',end='',flush=True)
+    url = "http://www.google.com"
+    timeout = 5
+    try:
+        request = requests.get(url, timeout=timeout)
+        print("[ \033[32mOnline\033[37m ]")
+    except (requests.ConnectionError, requests.Timeout) as exception:
+        print("[ \033[31mOfline\033[37m ]",flush=True);
+
+try:
+    packed_data()
+    internet_status()
+    print("\n\n\n")
+    print_message("starting-up waiting a moment ...  ")
+except KeyboardInterrupt:
+    _sys_(r'tput rmcup && printf "\e[?25h"')
+_sys_("tput rmcup")
+print("\033[?25h",end='')
